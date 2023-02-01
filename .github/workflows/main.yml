@@ -13,9 +13,6 @@ jobs:
     steps:
      #checkout your github code using actions/checkout@v2.5.0
       - uses: actions/checkout@v2.5.0
-      
-      - name: Login to DockerHub
-        run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
 
      #do the same with another action (actions/setup-java@v3) that enable to setup jdk 17
       - name: Set up JDK 17
@@ -37,6 +34,9 @@ jobs:
      steps:
        - name: Checkout code
          uses: actions/checkout@v2.5.0
+         
+       - name: Login to DockerHub
+         run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
 
        - name: Build image and push backend
          uses: docker/build-push-action@v2
