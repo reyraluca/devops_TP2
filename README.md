@@ -140,3 +140,15 @@ deployé pluseurs testcontenaire en meme temps
 
 
 2.3 main.yml 
+
+
+
+3.1
+
+
+
+3.2
+
+
+
+3.3
