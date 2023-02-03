@@ -1,0 +1,38 @@
+version: '3.3'
+services:
+  backend:
+    container_name: backend
+    build: ./simple-api
+    networks:
+      - irc
+    depends_on:
+      - database
+
+  database:
+    container_name: database
+    restart: always
+    build: ./database
+    networks:
+      - irc
+    env_file:
+      - database/.env
+
+  httpd:
+    container_name: reverse_proxy
+    build: ./httpd
+    ports:
+      - "80:80"
+    networks:
+      - irc
+    depends_on:
+      - backend
+
+
+volumes:
+  my_db_volume:
+    driver: local
+
+networks:
+  irc:
+
+
