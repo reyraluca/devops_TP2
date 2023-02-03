@@ -93,62 +93,116 @@ networks:
 
 
 
-question 1.5 // revoir
+****question 1.5****
 
+```
+# Note: tags has to be all lower-case
+tags:  ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-simple-api
+
+tags:  ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-database
+
+# Note: tags has to be all lower-case
+tags:  ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-httpd
+
+# build on feature branches, push only on main branch
+push: ${{ github.ref == 'refs/heads/main' }}
+```
+
+docker tag [OPTIONS] IMAGE[:TAG] [REGISTRYHOST/][USERNAME/]NAME[:TAG]
+docker push NAME[:TAG]
+		   
+		   
+		   
+		   
+		   
+
+
+
+****TP2:****
+
+****2.1****
+permets de conteneurisé des process de tests unitaires/acceptance et intégration compatible avec plusieurs technos dont JUnit.
+possibilité de deployer pluseurs testcontenaire en meme temps 
+
+
+
+
+****2.2****
+
+```
+name: CI devops 2023
+on:
+  #On lance les CI à chaque push sur les branches main et develop
+  push:
+    branches: 
+        - 'main'
+        - 'develop'
+  pull_request:
+
+jobs:
+  test-backend: 
+    runs-on: ubuntu-22.04
+    steps:
+     #checkout your github code using actions/checkout@v2.5.0
+      - uses: actions/checkout@v2.5.0
+
+     #do the same with another action (actions/setup-java@v3) that enable to setup jdk 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+     #finally build your app with the latest command
+     #lancement du verify avec sonar relié à notre projectKey et OrganisationKey
+      - name: Build and test with Maven
+        working-directory: ./tp2/simple-api   #permets de se placer dans ce dossier pour chaque commande. Utile car mvn ne se lance que dans le dossier ou un pom.xml est présent
+        run: mvn -B verify sonar:sonar -Dsonar.projectKey=reyraluca_devops_TP2 -Dsonar.organization=tp-devops -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+#second job : avec build et publication des images dockers
+        
+  build-and-push-docker-image:
+     needs: test-backend
+     # run only when code is compiling and tests are passing
+     runs-on: ubuntu-22.04
+
+     # steps to perform in job
+     steps:
+       - name: Checkout code
+         uses: actions/checkout@v2.5.0
+         
+       - name: Login to DockerHub
+         run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+
+       - name: Build image and push backend
+         uses: docker/build-push-action@v2
+         with:
+           # relative path to the place where source code with Dockerfile is located
+           context: ./tp2/simple-api
            # Note: tags has to be all lower-case
            tags:  ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-simple-api
-           
+           # build on feature branches, push only on main branch
+           push: ${{ github.ref == 'refs/heads/main' }}
+
+       - name: Build image and push database
+         uses: docker/build-push-action@v3
+         with:
+           # relative path to the place where source code with Dockerfile is located
+           context: ./tp2/database
+           # Note: tags has to be all lower-case
            tags:  ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-database
-           
+           # build on feature branches, push only on main branch
+           push: ${{ github.ref == 'refs/heads/main' }}
+
+       - name: Build image and push httpd
+         uses: docker/build-push-action@v3
+         with:
+           # relative path to the place where source code with Dockerfile is located
+           context: ./tp2/httpd
            # Note: tags has to be all lower-case
            tags:  ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-httpd
-		   
-		   
-		   
-		   
-		   
-		   
+           # build on feature branches, push only on main branch
+           push: ${{ github.ref == 'refs/heads/main' }}
+```
 
 
-
-TP2:
-
-2.1
-
-
-facile les test unitaire / acceptance / integration en complete isolation et étant compatible avec la cible
-deployé pluseurs testcontenaire en meme temps 
-
-
-
-
-
-
-2.2
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-2.3 main.yml 
-
-
-
-3.1
-
-
-
-3.2
-
-
-
-3.3
