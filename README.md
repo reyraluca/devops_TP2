@@ -1,8 +1,8 @@
 Maxime RISS et Luca POLGAR
 
-TP1:
+****TP1:****
 
-question 1.1
+****question 1.1****
 creation du dockerfile:
 
 ```
@@ -27,41 +27,41 @@ docker run -p 5431:5432--name database softsouls/database
 ```
 
 
-question 1.2
-pour paralleliser nous fais gagner du temps et paralleliser la chage du build pour une meilleur exéccution
+****question 1.2****
+cela nous permets de centraliser des étapes qui renécessiterait des opérations déjà fournis ailleurs.
+Par exemple si 2 stages ont besoin d'un même artifact que l'on doit créer au préalable, on peut le copier depuis une autre étape. Cela nous fais gagner du temps 
 
-build:
-nous nous positionnnons dans un environnement maven
-puis nous copions le pom.xml vers les sources
-pour apres lancer la creation d'un package
+Etape 1 du dockerfile - build:
+Depuis un environnement maven,
+Nous copions le pom.xml ainsi que les sources
+pour apres lancer la creation d'un package et donc la génération d'un executable
 
-run:
-nous nous positionnnons sur notre application 
-nous copions le package généré par le build
-nous exécution le package java
+Etape 2 du dockerfile - run:
+Depuis un environnement Java 17
+nous copions le jar généré par le mvn package
+on execute avec le jar
 
-
-question 1.3
-docker compose up 
+****question 1.3****
+docker compose up (lancement du build avec démarrage des conteneurs. -d permets de lancer en arrière plan)
 docker compose logs
-docker compose down
-docker compose stop
+docker compose down (pour stopper les conteneurs et effacer les images)
+docker compose stop (stopper les conteneurs)
 docker compose build
 docker compose restart
 
 
-question 1.4
+****question 1.4****
 
 ```
 version: '3.3'
 services:
   backend:
     container_name: backend
-    build: ./simple-api
+    build: ./simple-api   #indication du chemin vers dockerfile
     networks:
-      - irc
+      - irc  #branché au réseau irc
     depends_on:
-      - database
+      - database   #attente du déploiement du conteneur database pour déployer celui-ci
 
   database:
     container_name: database
